@@ -20,7 +20,7 @@ tasks:
     - docker-compose -f webapp/docker-compose.yml up -d
     - task: migrate
 
-  down:
+  run-down:
    desc: Start development server
    cmd: docker-compose -f webapp/docker-compose.yml down
 
