@@ -135,6 +135,25 @@ services:
    command:
      - '--config.file=/etc/prometheus/prometheus.yml'
 
+  node-exporter:
+    image: prom/node-exporter:v1.3.1
+    hostname: prometheus-book
+    ports:
+      - '9100:9100'
+    networks:
+      - my_network
+
+  container-exporter:
+    image: prom/container-exporter
+    platform: linux/amd64
+    ports:
+      - '9102:9102'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/cgroup
+    networks:
+      - my_network
+
 volumes:
   mysql:
   grafana_storage: {}
