@@ -45,6 +45,11 @@ tasks:
     cmds:
       - cd benchmarker/userdata && curl -L -O https://github.com/catatsuy/private-isu/releases/download/img/img.zip
 
+  init-sql:
+    cmds:
+      - echo "Initializing webapp SQL dump..."
+      - bunzip2 webapp/sql/dump.sql.bz2
+
   unzip-img:
     desc: Unzip image zip
     cmds:
