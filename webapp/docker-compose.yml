@@ -72,7 +72,7 @@ services:
       - my_network
 
   grafana:
-    image: grafana/grafana-enterprise:8.3.0
+    image: grafana/grafana:main
     ports:
       - 3000:3000
     environment:
@@ -84,6 +84,11 @@ services:
       GF_DATABASE_USER: root
       GF_DATABASE_PASSWORD: root
       GF_DATABASE_SSL_MODE: disable
+      GF_INSTALL_PLUGINS: grafana-pyroscope-app
+      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: true
+
     restart: unless-stopped
     volumes:
       - 'grafana_storage:/var/lib/grafana'
@@ -134,6 +139,48 @@ services:
      - 'prometheus-data:/prometheus'
    command:
      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  node-exporter:
+    image: prom/node-exporter:v1.3.1
+    hostname: prometheus-book
+    ports:
+      - '9100:9100'
+    networks:
+      - my_network
+
+  container-exporter:
+    image: prom/container-exporter
+    platform: linux/amd64
+    ports:
+      - '9102:9102'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/cgroup
+    networks:
+      - my_network
+
+  pyroscope:
+    image: grafana/pyroscope:latest
+    container_name: pyroscope
+    ports:
+      - "4040:4040"
+    networks:
+      - my_network
+
+  alloy:
+    image: grafana/alloy:v1.3.1
+    ports:
+      - "12347:12345"
+    volumes:
+      - "./alloy/config.alloy:/etc/alloy/config.alloy"
+      - "./alloy/endpoints.json:/etc/alloy/endpoints.json"
+    command: [
+      "run",
+      "--server.http.listen-addr=0.0.0.0:12345",
+      "--stability.level=public-preview",
+      "/etc/alloy/config.alloy",
+    ]
+
 
 volumes:
   mysql:
