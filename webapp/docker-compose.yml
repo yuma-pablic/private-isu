@@ -8,8 +8,8 @@ services:
     volumes:
       - ./etc/nginx/conf.d:/etc/nginx/conf.d
       - ./public:/public
-      # NGINXのコンフィグファイルをホストOSから、ゲストOSに連結する
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./logs/nginx:/var/log/nginx
     ports:
       - "80:80"
     networks:
@@ -71,34 +71,6 @@ services:
     networks:
       - my_network
 
-  grafana:
-    image: grafana/grafana:main
-    ports:
-      - 3000:3000
-    environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_DATABASE_TYPE: mysql
-      GF_DATABASE_HOST: mysql:3306
-      GF_DATABASE_NAME: isuconp
-      GF_DATABASE_USER: root
-      GF_DATABASE_PASSWORD: root
-      GF_DATABASE_SSL_MODE: disable
-      GF_INSTALL_PLUGINS: grafana-pyroscope-app
-      GF_AUTH_ANONYMOUS_ENABLED: true
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
-      GF_AUTH_DISABLE_LOGIN_FORM: true
-
-    restart: unless-stopped
-    volumes:
-      - 'grafana_storage:/var/lib/grafana'
-      - '../grafana/datasources:/etc/grafana/provisioning/datasources'
-    networks:
-      - my_network
-    depends_on:
-     mysql:
-        condition: service_healthy
-
   nginx-exporter:
     build: ./nginx-exporter
     container_name: nginx-exporter
@@ -148,17 +120,6 @@ services:
     networks:
       - my_network
 
-  container-exporter:
-    image: prom/container-exporter
-    platform: linux/amd64
-    ports:
-      - '9102:9102'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /sys/fs/cgroup:/cgroup
-    networks:
-      - my_network
-
   pyroscope:
     image: grafana/pyroscope:latest
     container_name: pyroscope
@@ -167,20 +128,31 @@ services:
     networks:
       - my_network
 
-  alloy:
-    image: grafana/alloy:v1.3.1
+  grafana:
+    image: grafana/grafana
     ports:
-      - "12347:12345"
+      - 3000:3000
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_DATABASE_TYPE: mysql
+      GF_DATABASE_HOST: mysql:3306
+      GF_DATABASE_NAME: isuconp
+      GF_DATABASE_USER: root
+      GF_DATABASE_PASSWORD: root
+      GF_DATABASE_SSL_MODE: disable
+      GF_INSTALL_PLUGINS: grafana-pyroscope-app
+    restart: unless-stopped
     volumes:
-      - "./alloy/config.alloy:/etc/alloy/config.alloy"
-      - "./alloy/endpoints.json:/etc/alloy/endpoints.json"
-    command: [
-      "run",
-      "--server.http.listen-addr=0.0.0.0:12345",
-      "--stability.level=public-preview",
-      "/etc/alloy/config.alloy",
-    ]
-
+      - '../grafana/dashboards:/var/lib/grafana/dashboards'
+      - '../grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml'
+      - '../grafana/datasources:/etc/grafana/provisioning/datasources'
+      - 'grafana_storage:/var/lib/grafana'
+    networks:
+      - my_network
+    depends_on:
+     mysql:
+        condition: service_healthy
 
 volumes:
   mysql:
