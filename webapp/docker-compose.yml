@@ -20,10 +20,13 @@ services:
       # Go実装の場合は golang/ PHP実装の場合は php/
       context: golang/
       dockerfile: Dockerfile
+      args:
+        BUILDPLATFORM: linux/amd64
     depends_on:
       - mysql
       - memcached
     environment:
+      DOCKER_BUILDKIT: 1
       ISUCONP_DB_HOST: mysql
       ISUCONP_DB_PORT: 3306
       ISUCONP_DB_USER: root
