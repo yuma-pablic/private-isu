@@ -36,11 +36,22 @@ providers:
 
   - name: 'k6'
     orgId: 1
-    folder: 'ISUCONP'
+    folder: 'Isuconp'
     type: file
     disableDeletion: false
     updateIntervalSeconds: 10
     allowUiUpdates: false
     options:
       path: /var/lib/grafana/dashboards/k6.json
+      foldersFromFilesStructure: false
+
+  - name: 'nginx-access-log'
+    orgId: 1
+    folder: 'Isuconp'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards/nginx-access-log.json
       foldersFromFilesStructure: false
