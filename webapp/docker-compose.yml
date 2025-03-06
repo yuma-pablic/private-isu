@@ -1,7 +1,6 @@
+version: '3'
 name: private-isu
 
-networks:
-  my_network:
 services:
   nginx:
     image: nginx:1.26
@@ -182,9 +181,13 @@ services:
     networks:
       - my_network
     depends_on:
-     - mysqld-exporter
+     mysql:
+      condition: service_healthy
 
 volumes:
   mysql:
   grafana_storage: {}
   prometheus-data: {}
+
+networks:
+  my_network:
