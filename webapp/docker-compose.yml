@@ -1,4 +1,7 @@
 name: private-isu
+
+networks:
+  my_network:
 services:
   nginx:
     image: nginx:1.26
@@ -12,6 +15,17 @@ services:
       - ./logs/nginx:/var/log/nginx
     ports:
       - "80:80"
+    networks:
+      - my_network
+
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:2.9.6
+    command: "-config.file=/etc/promtail/promtail.yaml"
+    volumes:
+      - ../promtail:/etc/promtail/
+      - ./logs/nginx:/var/log/nginx
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - my_network
 
@@ -131,6 +145,20 @@ services:
     networks:
       - my_network
 
+  loki:
+    container_name: loki
+    image: grafana/loki:3.0.0
+    command: "-config.file=/etc/loki/loki.yaml"
+    environment:
+      LOG_CLUSTER_DEPTH: '8'
+      LOG_SIM_TH: '0.3'
+    volumes:
+      - ../loki/loki.yaml:/etc/loki/loki.yaml
+    networks:
+      - my_network
+    ports:
+      - 3100:3100
+
   grafana:
     image: grafana/grafana
     ports:
@@ -144,7 +172,7 @@ services:
       GF_DATABASE_USER: root
       GF_DATABASE_PASSWORD: root
       GF_DATABASE_SSL_MODE: disable
-      GF_INSTALL_PLUGINS: grafana-pyroscope-app
+      GF_INSTALL_PLUGINS: grafana-pyroscope-app,https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
     restart: unless-stopped
     volumes:
       - '../grafana/dashboards:/var/lib/grafana/dashboards'
@@ -161,7 +189,3 @@ volumes:
   mysql:
   grafana_storage: {}
   prometheus-data: {}
-
-
-networks:
-  my_network:
