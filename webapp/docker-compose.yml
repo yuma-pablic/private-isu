@@ -182,8 +182,7 @@ services:
     networks:
       - my_network
     depends_on:
-     mysql:
-        condition: service_healthy
+     - mysqld-exporter
 
 volumes:
   mysql:

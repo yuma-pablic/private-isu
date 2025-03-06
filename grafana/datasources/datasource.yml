@@ -28,6 +28,7 @@ datasources:
       disableRecordingRules: false
       incrementalQueryOverlapWindow: 10m
       exemplarTraceIdDestinations:
+      uid: PBFA97CFB590B2093
 
   - name: Grafana Pyroscope
     type: grafana-pyroscope-datasource
