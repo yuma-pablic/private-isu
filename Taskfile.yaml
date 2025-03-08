@@ -72,12 +72,18 @@ tasks:
     cmd: echo "http://localhost:3000"
 
   create-migration:
+    desc: Create migration
     cmds:
-      - atlas migrate diff {{.CLI_ARGS}} --dir "file://webapp/golang/migrations" --to "file://benchmarker/sql/schema.sql" --dev-url "mysql://root:root@localhost:3306/isuconp?charset=utf8mb4&parseTime=true&loc=Local"
-
+       - atlas migrate diff {{.CLI_ARGS}} --env local
   migrate:
+     desc: Migrate database
      cmds:
-     - atlas migrate apply --dir "file://webapp/golang/migrations" --url "mysql://root:root@localhost:3306/isuconp?charset=utf8mb4&parseTime=true&loc=Local"
+       - atlas migrate apply --env local
+
+  down-migrate:
+    desc: Down migrate database
+    cmds:
+      - atlas migrate down --env local
 
   create-cloud-migrate:
     cmds:
@@ -90,3 +96,7 @@ tasks:
     desc: Initialize project
     cmds:
       - atlas migrate diff initial --to file://webapp/golang/migrations --dev-url "docker://mysql/8/dev"
+
+  migration-check:
+    desc: Check migration
+    cmd: atlas migrate validate --env local
