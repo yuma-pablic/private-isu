@@ -28,3 +28,5 @@ CREATE TABLE comments (
   `comment` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_comment_id ON comments(id);
