@@ -21,6 +21,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
+	"github.com/grafana/pyroscope-go"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -830,13 +831,13 @@ func main() {
 	defer db.Close()
 
 	// Pyroscope の初期化
-	// pyroscope.Start(pyroscope.Config{
-	// 	ApplicationName: "isuconp",
-	// 	ServerAddress:   "http://localhost:4040",
-	// 	Logger:          pyroscope.StandardLogger, // 本番環境では無効化を推奨します
-	// 	UploadRate:      1 * time.Second,
-	// 	ProfileTypes:    pyroscope.DefaultProfileTypes,
-	// })
+	pyroscope.Start(pyroscope.Config{
+		ApplicationName: "isuconp",
+		ServerAddress:   "http://pyroscope:4040",
+		Logger:          pyroscope.StandardLogger, // 本番環境では無効化を推奨します
+		UploadRate:      1 * time.Second,
+		ProfileTypes:    pyroscope.DefaultProfileTypes,
+	})
 	// ここまで
 
 	r := chi.NewRouter()
