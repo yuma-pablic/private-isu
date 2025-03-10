@@ -19,3 +19,20 @@ scrape_configs:
           hostname: ${HOSTNAME}
           pid: ${PID}
           __path__: /var/log/nginx/access.log
+  - job_name: flog_scrape
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: ["__meta_docker_container_name"]
+        regex: "/(.*)"
+        target_label: "container"
+    pipeline_stages:
+      - match:
+          selector: '{container =~ "private-isu-.*"}'
+          stages:
+            - regex:
+                expression: '.*"question":"(?P<question>[a-zA-Z0-9]+)".*"number":(?P<number>\d+).*'
+            - labels:
+                question:
+                number:
