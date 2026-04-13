@@ -61,18 +61,6 @@ services:
     image: memcached:1.6
     networks:
       - my_network
-  
-    # migrate:
-  #   image: arigaio/atlas:latest
-  #   command: >
-  #     migrate apply --dir file://webapp/golang/migrations --url mysql://root:root@mysql:3306/isuconp?charset=utf8mb4&parseTime=true&loc=Local --allow-dirty
-  #   networks:
-  #     - my_network
-  #   depends_on:
-  #     mysql:
-  #       condition: service_healthy
-  #   volumes:
-  #     - ./webapp/golang/migrations/:/migrations
 
 volumes:
   mysql:
