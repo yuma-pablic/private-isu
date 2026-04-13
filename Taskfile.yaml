@@ -81,13 +81,6 @@ tasks:
     cmds:
       - atlas migrate down --env local
 
-  # create-cloud-migrate:
-  #   cmds:
-  #     - atlas migrate diff create_tests --dir "file://webapp/golang/migrations" --to "file://benchmarker/sql/schema.sql" --dev-url "docker://mysql/8/dev"
-
-  # cloud-migrate:
-  #    cmd: atlas migrate apply --dir "file://webapp/golang/migrations" --url "docker://mysql/8/dev"
-
   init-ms:
     desc: Initialize project
     cmds:
